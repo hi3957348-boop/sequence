@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>단어 카드 게임</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ══════════ 홈 화면 ══════════ -->
+    <div id="screen-home" class="screen active">
+      <div class="home-wrap">
+        <div class="home-logo">
+          <i class="ti ti-cards"></i>
+          <h1>단어 카드 게임</h1>
+          <p>선생님이 만든 게임에 참여하거나 새 게임을 만들어보세요</p>
+        </div>
+        <div class="home-actions">
+          <button class="btn-primary btn-large" onclick="App.goScreen('screen-join')">
+            <i class="ti ti-door-enter"></i> 게임 참여하기
+          </button>
+          <button class="btn-secondary btn-large" onclick="App.goTeacherLogin()">
+            <i class="ti ti-pencil"></i> 선생님 — 게임 만들기
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 게임 참여 화면 ══════════ -->
+    <div id="screen-join" class="screen">
+      <div class="container-sm">
+        <button class="back-link" onclick="App.goScreen('screen-home')">
+          <i class="ti ti-arrow-left"></i> 돌아가기
+        </button>
+        <h2>게임 참여</h2>
+        <p class="sub">선생님께 받은 게임 코드를 입력하세요</p>
+        <div class="code-input-wrap">
+          <input id="join-code" type="text" placeholder="예: ABC123" maxlength="6"
+            oninput="this.value=this.value.toUpperCase()" class="code-input">
+          <button class="btn-primary" onclick="App.joinGame()">
+            <i class="ti ti-arrow-right"></i> 참여
+          </button>
+        </div>
+        <div id="join-error" class="error-msg hidden"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ 선생님 로그인 ══════════ -->
+    <div id="screen-teacher-login" class="screen">
+      <div class="container-sm">
+        <button class="back-link" onclick="App.goScreen('screen-home')">
+          <i class="ti ti-arrow-left"></i> 돌아가기
+        </button>
+        <h2>선생님 로그인</h2>
+        <div class="form-group">
+          <label>이메일</label>
+          <input id="login-email" type="email" placeholder="teacher@school.com">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input id="login-pw" type="password" placeholder="비밀번호">
+        </div>
+        <div id="login-error" class="error-msg hidden"></div>
+        <button class="btn-primary btn-full" onclick="App.login()">
+          <i class="ti ti-login"></i> 로그인
+        </button>
+        <p class="divider-text">계정이 없으신가요?</p>
+        <button class="btn-secondary btn-full" onclick="App.goScreen('screen-teacher-signup')">
+          <i class="ti ti-user-plus"></i> 회원가입
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════ 선생님 회원가입 ══════════ -->
+    <div id="screen-teacher-signup" class="screen">
+      <div class="container-sm">
+        <button class="back-link" onclick="App.goScreen('screen-teacher-login')">
+          <i class="ti ti-arrow-left"></i> 돌아가기
+        </button>
+        <h2>회원가입</h2>
+        <div class="form-group">
+          <label>이름</label>
+          <input id="signup-name" type="text" placeholder="선생님 이름">
+        </div>
+        <div class="form-group">
+          <label>이메일</label>
+          <input id="signup-email" type="email" placeholder="teacher@school.com">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input id="signup-pw" type="password" placeholder="6자 이상">
+        </div>
+        <div id="signup-error" class="error-msg hidden"></div>
+        <button class="btn-primary btn-full" onclick="App.signup()">
+          <i class="ti ti-user-plus"></i> 가입하기
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════ 선생님 대시보드 ══════════ -->
+    <div id="screen-dashboard" class="screen">
+      <div class="container">
+        <div class="dashboard-header">
+          <div>
+            <h2>내 게임 목록</h2>
+            <p class="sub" id="dash-user-name"></p>
+          </div>
+          <div class="dash-actions">
+            <button class="btn-primary" onclick="App.goScreen('screen-editor')">
+              <i class="ti ti-plus"></i> 새 게임 만들기
+            </button>
+            <button class="btn-ghost" onclick="App.logout()">
+              <i class="ti ti-logout"></i> 로그아웃
+            </button>
+          </div>
+        </div>
+        <div id="game-list" class="game-list">
+          <div class="empty-state">
+            <i class="ti ti-mood-empty"></i>
+            <p>아직 만든 게임이 없어요</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 게임 편집기 ══════════ -->
+    <div id="screen-editor" class="screen">
+      <div class="container">
+        <div class="editor-header">
+          <button class="back-link" onclick="App.goScreen('screen-dashboard')">
+            <i class="ti ti-arrow-left"></i> 대시보드
+          </button>
+          <div class="editor-title-wrap">
+            <input id="game-title" type="text" placeholder="게임 제목 입력..." class="title-input">
+          </div>
+          <div class="editor-actions">
+            <button class="btn-secondary" onclick="App.saveGame()">
+              <i class="ti ti-device-floppy"></i> 저장
+            </button>
+            <button class="btn-primary" id="btn-preview-game" onclick="App.previewGame()" disabled>
+              <i class="ti ti-player-play"></i> 미리보기
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-body">
+          <!-- 왼쪽: 카드 입력 -->
+          <div class="editor-left">
+            <div class="card-panel">
+              <div class="panel-head">
+                <span class="panel-label">카드 목록</span>
+                <div class="seg-ctrl">
+                  <button class="seg-btn active" id="type-word-btn" onclick="Editor.setType('word')">단어</button>
+                  <button class="seg-btn" id="type-sent-btn" onclick="Editor.setType('sentence')">문장</button>
+                </div>
+              </div>
+              <div id="card-items"></div>
+              <button class="add-item-btn" onclick="Editor.addItem()">
+                <i class="ti ti-plus"></i> 카드 추가
+              </button>
+            </div>
+          </div>
+
+          <!-- 오른쪽: 정답 & 제시 방법 -->
+          <div class="editor-right">
+            <div class="card-panel">
+              <div class="panel-head">
+                <span class="panel-label">정답 순서</span>
+              </div>
+              <p class="hint-text">학생이 클릭해야 할 카드를 순서대로 선택하세요</p>
+              <div id="answer-chips"></div>
+              <div class="answer-summary" id="answer-summary"></div>
+            </div>
+
+            <div class="card-panel">
+              <div class="panel-head">
+                <span class="panel-label">제시 방법</span>
+              </div>
+              <div class="mode-btns">
+                <button class="mode-btn active" id="mode-visual-btn" onclick="Editor.setMode('visual')">
+                  <i class="ti ti-eye"></i> 보여주기
+                </button>
+                <button class="mode-btn" id="mode-audio-btn" onclick="Editor.setMode('audio')">
+                  <i class="ti ti-volume"></i> 들려주기
+                </button>
+                <button class="mode-btn" id="mode-both-btn" onclick="Editor.setMode('both')">
+                  <i class="ti ti-eye-check"></i> 둘 다
+                </button>
+              </div>
+
+              <div id="audio-settings" class="audio-settings hidden">
+                <div class="speed-row">
+                  <label>읽기 속도</label>
+                  <input type="range" id="speed-slider" min="1" max="10" value="7" step="1"
+                    oninput="Editor.updateSpeedLabel()">
+                  <span id="speed-label">보통</span>
+                </div>
+                <button class="btn-secondary btn-sm" onclick="Editor.speakPreview()">
+                  <i class="ti ti-volume"></i> 미리 듣기
+                </button>
+              </div>
+
+              <div class="preview-cards-wrap">
+                <p class="hint-text" style="margin-bottom:8px">카드 배치 미리보기 (보라색 = 정답)</p>
+                <div id="preview-cards" class="preview-cards"></div>
+              </div>
+            </div>
+
+            <div class="card-panel" id="share-panel" style="display:none">
+              <div class="panel-head">
+                <span class="panel-label">공유</span>
+              </div>
+              <div class="share-code-wrap">
+                <div class="share-code" id="share-code">——</div>
+                <button class="btn-ghost btn-sm" onclick="App.copyCode()">
+                  <i class="ti ti-copy"></i> 복사
+                </button>
+              </div>
+              <p class="hint-text">학생에게 이 코드를 알려주세요</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 게임 화면 (학생/선생님 공용) ══════════ -->
+    <div id="screen-game" class="screen">
+      <div class="container">
+        <div class="game-topbar">
+          <div class="game-stats">
+            <div class="stat"><span class="stat-label">라운드</span><span class="stat-val" id="g-round">1</span></div>
+            <div class="stat"><span class="stat-label">성공</span><span class="stat-val green" id="g-ok">0</span></div>
+            <div class="stat"><span class="stat-label">실패</span><span class="stat-val red" id="g-fail">0</span></div>
+          </div>
+          <div class="game-controls">
+            <button class="btn-ghost btn-sm" id="btn-listen" onclick="Game.speak()" style="display:none">
+              <i class="ti ti-volume"></i> 다시 듣기
+            </button>
+            <button class="btn-ghost btn-sm" onclick="App.exitGame()">
+              <i class="ti ti-x"></i> 나가기
+            </button>
+          </div>
+        </div>
+
+        <div class="prompt-banner" id="prompt-banner">
+          <div class="prompt-content" id="prompt-content"></div>
+          <div class="prompt-hint" id="prompt-hint"></div>
+        </div>
+
+        <div class="seq-row" id="seq-row"></div>
+
+        <div class="cards-grid" id="game-cards"></div>
+
+        <div id="game-result" class="game-result hidden">
+          <div class="result-emoji" id="result-emoji"></div>
+          <div class="result-title" id="result-title"></div>
+          <div class="result-sub" id="result-sub"></div>
+          <div class="result-btns">
+            <button class="btn-primary" onclick="Game.next()">다음 라운드</button>
+            <button class="btn-secondary" onclick="Game.retry()">다시 시도</button>
+            <button class="btn-ghost" onclick="App.exitGame()">나가기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #app -->
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="loading" class="loading-overlay hidden"><div class="spinner"></div></div>
+
+  <!-- Firebase -->
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 게임 컬렉션
+    match /games/{gameId} {
+      // 누구나 코드로 읽기 가능 (학생 참여)
+      allow read: if true;
+
+      // 로그인한 선생님만 자신의 게임 쓰기/수정/삭제
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                             && resource.data.uid == request.auth.uid;
+    }
+  }
+}
